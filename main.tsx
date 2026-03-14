@@ -1,93 +1,170 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { ArrowRight, Info } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { CheckCircle2, XCircle, RotateCcw, Trophy, ChevronRight } from 'lucide-react';
+import { quizData } from '../data/content';
 
-export default function SystemDiagram() {
-  const [activeStep, setActiveStep] = React.useState<number | null>(null);
+const Quiz = () => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showScore, setShowScore] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [highScore, setHighScore] = useState(0);
 
-  const wastewaterSteps = [
-    { id: 1, name: 'Nước thải đầu vào', desc: 'Nước thải từ các nguồn sinh hoạt, công nghiệp tập trung về hố thu.' },
-    { id: 2, name: 'Song chắn rác', desc: 'Loại bỏ rác thô, túi nilon, vật thể lớn để bảo vệ bơm.' },
-    { id: 3, name: 'Bể lắng cát', desc: 'Tách cát, sỏi và các hạt vô cơ nặng để tránh mài mòn thiết bị.' },
-    { id: 4, name: 'Bể lắng 1', desc: 'Lắng các hạt cặn lơ lửng hữu cơ, giảm tải trọng cho bể sinh học.' },
-    { id: 5, name: 'Bể Aerotank', desc: 'Xử lý sinh học hiếu khí, vi sinh vật phân hủy chất hữu cơ.' },
-    { id: 6, name: 'Bể lắng 2', desc: 'Tách bùn hoạt tính ra khỏi nước sạch sau khi xử lý sinh học.' },
-    { id: 7, name: 'Bể khử trùng', desc: 'Tiêu diệt vi khuẩn gây bệnh bằng Clo hoặc tia UV.' },
-    { id: 8, name: 'Nguồn tiếp nhận', desc: 'Nước đạt chuẩn xả ra sông, hồ hoặc tái sử dụng.' },
-  ];
+  useEffect(() => {
+    const savedScore = localStorage.getItem('env-quiz-highscore');
+    if (savedScore) setHighScore(parseInt(savedScore));
+  }, []);
+
+  const handleAnswerOptionClick = (option: string) => {
+    if (selectedOption) return; // Prevent multiple clicks
+
+    setSelectedOption(option);
+    const correct = option === quizData[currentQuestion].answer;
+    setIsCorrect(correct);
+    
+    if (correct) {
+      setScore(score + 1);
+    }
+  };
+
+  const nextQuestion = () => {
+    const nextQ = currentQuestion + 1;
+    if (nextQ < quizData.length) {
+      setCurrentQuestion(nextQ);
+      setSelectedOption(null);
+      setIsCorrect(null);
+    } else {
+      setShowScore(true);
+      if (score + (isCorrect ? 1 : 0) > highScore) {
+        localStorage.setItem('env-quiz-highscore', (score + (isCorrect ? 1 : 0)).toString());
+        setHighScore(score + (isCorrect ? 1 : 0));
+      }
+    }
+  };
+
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setShowScore(false);
+    setSelectedOption(null);
+    setIsCorrect(null);
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold mb-4">Sơ đồ hệ thống xử lý</h1>
-        <p className="text-text-muted max-w-2xl mx-auto">
-          Quy trình công nghệ xử lý nước thải điển hình. Di chuột (hover) vào từng bước để xem giải thích chi tiết.
-        </p>
-      </div>
+    <div className="max-w-3xl mx-auto space-y-8">
+      <header className="text-center space-y-2">
+        <h1 className="text-4xl font-serif font-bold text-slate-100">Quiz Ôn tập</h1>
+        <p className="text-slate-400">Kiểm tra kiến thức chuyên ngành của bạn.</p>
+      </header>
 
-      <div className="glass-card p-8 md:p-16 relative overflow-hidden">
-        {/* Background Grid Decoration */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none" 
-             style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+      <div className="bg-slate-900/50 border border-purple-900/30 rounded-3xl p-8 md:p-12 shadow-2xl">
+        <AnimatePresence mode="wait">
+          {showScore ? (
+            <motion.div
+              key="score"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center space-y-8 py-8"
+            >
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-purple-900/30 border-2 border-purple-500/50 text-purple-400 mb-4">
+                <Trophy size={48} />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-3xl font-serif font-bold text-slate-100">Hoàn thành!</h2>
+                <p className="text-slate-400 text-lg">Bạn đã trả lời đúng <span className="text-purple-400 font-bold">{score}</span> / {quizData.length} câu hỏi.</p>
+              </div>
+              
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 inline-block">
+                <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Điểm cao nhất</p>
+                <p className="text-xl font-bold text-slate-200">{highScore} / {quizData.length}</p>
+              </div>
 
-        <div className="relative z-10 flex flex-wrap justify-center gap-8 md:gap-12">
-          {wastewaterSteps.map((step, idx) => (
-            <React.Fragment key={step.id}>
-              <motion.div
-                onMouseEnter={() => setActiveStep(step.id)}
-                onMouseLeave={() => setActiveStep(null)}
-                className={`relative w-40 h-24 flex items-center justify-center text-center p-4 rounded-xl border-2 transition-all duration-300 cursor-help ${
-                  activeStep === step.id
-                    ? 'bg-primary-purple border-highlight-purple shadow-lg shadow-primary-purple/40 scale-110'
-                    : 'bg-white/5 border-white/10 text-text-muted'
-                }`}
-              >
-                <span className={`font-bold text-sm ${activeStep === step.id ? 'text-white' : ''}`}>
-                  {step.name}
+              <div className="pt-4">
+                <button
+                  onClick={resetQuiz}
+                  className="px-8 py-3 bg-purple-900 hover:bg-purple-800 text-white rounded-xl font-medium transition-all flex items-center gap-2 mx-auto"
+                >
+                  <RotateCcw size={18} /> Thử lại lần nữa
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="question"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-8"
+            >
+              <div className="flex justify-between items-center">
+                <span className="px-3 py-1 rounded-full bg-purple-900/30 text-purple-400 text-xs font-bold uppercase tracking-wider">
+                  Câu hỏi {currentQuestion + 1} / {quizData.length}
                 </span>
-                
-                {/* Tooltip */}
-                {activeStep === step.id && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-64 bg-bg-dark border border-highlight-purple p-4 rounded-xl z-50 shadow-2xl"
-                  >
-                    <div className="flex items-center gap-2 mb-2 text-highlight-purple">
-                      <Info className="w-4 h-4" />
-                      <span className="text-xs font-bold uppercase">Chi tiết bước {step.id}</span>
-                    </div>
-                    <p className="text-xs text-text-bright leading-relaxed">
-                      {step.desc}
-                    </p>
-                  </motion.div>
-                )}
-              </motion.div>
-
-              {idx < wastewaterSteps.length - 1 && (
-                <div className="hidden lg:flex items-center">
-                  <ArrowRight className="text-white/20 w-6 h-6" />
+                <div className="h-1.5 w-32 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-500 transition-all duration-500" 
+                    style={{ width: `${((currentQuestion + 1) / quizData.length) * 100}%` }}
+                  />
                 </div>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
+              </div>
 
-      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="glass-card p-6 border-l-4 border-l-blue-500">
-          <h3 className="font-bold mb-2">Xử lý cơ học</h3>
-          <p className="text-sm text-text-muted">Bao gồm song chắn rác, lắng cát, lắng 1. Loại bỏ các tạp chất không tan.</p>
-        </div>
-        <div className="glass-card p-6 border-l-4 border-l-purple-500">
-          <h3 className="font-bold mb-2">Xử lý sinh học</h3>
-          <p className="text-sm text-text-muted">Trọng tâm là bể Aerotank và lắng 2. Sử dụng vi sinh vật để làm sạch nước.</p>
-        </div>
-        <div className="glass-card p-6 border-l-4 border-l-emerald-500">
-          <h3 className="font-bold mb-2">Xử lý hoàn thiện</h3>
-          <p className="text-sm text-text-muted">Khử trùng và xả thải. Đảm bảo nước đầu ra an toàn cho môi trường.</p>
-        </div>
+              <h2 className="text-2xl font-serif font-bold text-slate-100 leading-tight">
+                {quizData[currentQuestion].question}
+              </h2>
+
+              <div className="grid grid-cols-1 gap-4">
+                {quizData[currentQuestion].options.map((option, index) => {
+                  const isSelected = selectedOption === option;
+                  const isCorrectOption = option === quizData[currentQuestion].answer;
+                  
+                  let buttonClass = "w-full p-5 rounded-2xl text-left transition-all border-2 flex items-center justify-between ";
+                  
+                  if (!selectedOption) {
+                    buttonClass += "bg-slate-950 border-slate-800 hover:border-purple-500/50 hover:bg-slate-900";
+                  } else if (isSelected) {
+                    buttonClass += isCorrect ? "bg-emerald-900/20 border-emerald-500/50 text-emerald-200" : "bg-red-900/20 border-red-500/50 text-red-200";
+                  } else if (isCorrectOption) {
+                    buttonClass += "bg-emerald-900/20 border-emerald-500/50 text-emerald-200";
+                  } else {
+                    buttonClass += "bg-slate-950 border-slate-900 opacity-50";
+                  }
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswerOptionClick(option)}
+                      disabled={!!selectedOption}
+                      className={buttonClass}
+                    >
+                      <span className="font-medium">{option}</span>
+                      {selectedOption && isCorrectOption && <CheckCircle2 size={20} className="text-emerald-500" />}
+                      {selectedOption && isSelected && !isCorrect && <XCircle size={20} className="text-red-500" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedOption && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="pt-4 flex justify-end"
+                >
+                  <button
+                    onClick={nextQuestion}
+                    className="px-6 py-2 bg-purple-900 hover:bg-purple-800 text-white rounded-lg font-medium transition-all flex items-center gap-2"
+                  >
+                    {currentQuestion + 1 === quizData.length ? 'Xem kết quả' : 'Câu tiếp theo'} <ChevronRight size={18} />
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
-}
+};
+
+export default Quiz;

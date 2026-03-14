@@ -1,5 +1,10 @@
-{
-  "name": "Hệ thống Ôn tập Xử lý Chất thải - ĐHĐT",
-  "description": "Website học tập trực quan giúp sinh viên Khoa học Môi trường ôn tập kiến thức xử lý nước thải, chất thải rắn và khí thải.",
-  "requestFramePermissions": []
-}
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

@@ -1,26 +1,5 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
-    "module": "ESNext",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "allowJs": true,
-    "jsx": "react-jsx",
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    },
-    "allowImportingTsExtensions": true,
-    "noEmit": true
-  }
+  "name": "Hệ thống Học tập Kỹ thuật Môi trường - ĐH Đồng Tháp",
+  "description": "Nền tảng ôn tập lý thuyết, sơ đồ hệ thống và trắc nghiệm chuyên ngành Kỹ thuật Môi trường cho sinh viên DThU.",
+  "requestFramePermissions": []
 }
