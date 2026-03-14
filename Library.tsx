@@ -16,7 +16,11 @@ const Theory = () => {
   })).filter(category => category.topics.length > 0);
 
   return (
-    <div className="space-y-12">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-12"
+    >
       <header className="space-y-4">
         <h1 className="text-4xl font-serif font-bold text-slate-100">Lý thuyết chuyên đề</h1>
         <p className="text-slate-400">Khám phá các kiến thức nền tảng về kỹ thuật môi trường.</p>
@@ -69,7 +73,7 @@ const Theory = () => {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

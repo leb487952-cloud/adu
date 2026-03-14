@@ -36,9 +36,9 @@ const Quiz = () => {
       setIsCorrect(null);
     } else {
       setShowScore(true);
-      if (score + (isCorrect ? 1 : 0) > highScore) {
-        localStorage.setItem('env-quiz-highscore', (score + (isCorrect ? 1 : 0)).toString());
-        setHighScore(score + (isCorrect ? 1 : 0));
+      if (score > highScore) {
+        localStorage.setItem('env-quiz-highscore', score.toString());
+        setHighScore(score);
       }
     }
   };

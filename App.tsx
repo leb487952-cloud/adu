@@ -45,7 +45,7 @@ const TheoryDetail = () => {
         <div className="lg:col-span-2 space-y-8">
           <section className="space-y-4">
             <h2 className="text-2xl font-serif font-bold text-slate-100">Chi tiết nội dung</h2>
-            <div className="prose prose-invert max-w-none text-slate-300 leading-loose">
+            <div className="text-slate-300 leading-loose space-y-4">
               <p>{topic.content}</p>
             </div>
           </section>
